@@ -21,6 +21,8 @@ int pasos_maximos = 0;
 
 int pin_limit_switch = 0;
 
+int pin_button_start = 0;
+
 class MyCallbacks : public BLECharacteristicCallbacks {
   void onWrite(BLECharacteristic *pChar) override {
     std::string value = pChar->getValue();
@@ -65,6 +67,7 @@ void setup() {
   motor.setSpeed(speed);
 
   pinMode(pin_limit_switch, INPUT);
+  pinMode(pin_button_start, INPUT);
 
   BLEDevice::init("EraserBot");
   BLEServer *pServer = BLEDevice::createServer();
@@ -83,4 +86,24 @@ void setup() {
 }
 
 void loop() {
+
+  int button_start = digitalRead(pin_button_start);
+  
+  if (button_start == HIGH) {
+  {
+    // Mover el borrador
+    moverMotor(pasos_maximos);
+    int limit_switch = digitalRead(pin_limit_switch);
+    if (limit_switch == LOW)
+    {
+      // Regresar el borrador
+      moverMotor(-pasos_maximos);
+      Serial.println("Limpiado");
+
+    } else {
+      Serial.println("Error al limpiar");
+    }
+
+  }
+  
 }
